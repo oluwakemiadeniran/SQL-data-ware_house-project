@@ -1,24 +1,80 @@
+```sql
 -- ============================================================
 -- Data Warehouse Project
--- Database Initialization Script
+-- Database and Schema Initialization
 -- ============================================================
 -- Purpose:
--- Create the databases used for the Bronze, Silver, and Gold
--- layers of the data warehouse.
+-- Creates the DataWarehouse database and the three schemas
+-- used in the data warehouse architecture.
+--
 --
 --Tool used:
---MYsql
+--Microsoft SQL server
 --
--- Bronze: Raw data
+--
+-- Bronze: Raw/source data
 -- Silver: Cleaned and transformed data
 -- Gold: Business-ready data for analysis and reporting
 -- ============================================================
 
--- Create Bronze layer
-CREATE DATABASE IF NOT EXISTS DataWarehouse_Bronze;
 
--- Create Silver layer
-CREATE DATABASE IF NOT EXISTS DataWarehouse_Silver;
+-- Switch to the system database
+USE master;
+GO
 
--- Create Gold layer
-CREATE DATABASE IF NOT EXISTS DataWarehouse_Gold;
+
+-- Create the DataWarehouse database if it does not already exist
+IF DB_ID('DataWarehouse') IS NULL
+BEGIN
+    CREATE DATABASE DataWarehouse;
+END;
+GO
+
+
+-- Switch to the DataWarehouse database
+USE DataWarehouse;
+GO
+
+
+-- Create Bronze schema
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.schemas
+    WHERE name = 'bronze'
+)
+BEGIN
+    EXEC('CREATE SCHEMA bronze');
+END;
+GO
+
+
+-- Create Silver schema
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.schemas
+    WHERE name = 'silver'
+)
+BEGIN
+    EXEC('CREATE SCHEMA silver');
+END;
+GO
+
+
+-- Create Gold schema
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.schemas
+    WHERE name = 'gold'
+)
+BEGIN
+    EXEC('CREATE SCHEMA gold');
+END;
+GO
+
+
+-- Verify the schemas
+SELECT name AS schema_name
+FROM sys.schemas
+WHERE name IN ('bronze', 'silver', 'gold');
+GO
+```
